@@ -1,17 +1,21 @@
+// Libraries import
 import express from 'express'
-import prisma from '~/client'
+
+// Middlewares import
+import { defaultErrorHandler } from '~/middlewares/error.middlewares'
+
+// Routes import
+import authRouter from '~/routes/auth.routes'
 
 const app = express()
 
+// Enable JSON parsing for request bodies
 app.use(express.json())
 
-async function main() {
-  const allUsers = await prisma.user.findMany()
-  console.log(allUsers)
-}
+// Use app routes
+app.use('/auth', authRouter)
 
-main().catch((error) => {
-  console.error('Error in main function:', error)
-})
+// Error handler middleware
+app.use(defaultErrorHandler)
 
 export default app
