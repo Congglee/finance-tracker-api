@@ -21,3 +21,7 @@ export interface TokenPayload extends JwtPayload {
   exp: number
   iat: number
 }
+
+export interface LogoutReqBody {
+  refresh_token: string
+}

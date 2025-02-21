@@ -23,6 +23,11 @@ export const AUTH_MESSAGES = {
 
   EMAIL_OR_PASSWORD_IS_INCORRECT: 'Email or password is incorrect',
 
+  ACCESS_TOKEN_IS_REQUIRED: 'Access token is required',
+  REFRESH_TOKEN_IS_REQUIRED: 'Refresh token is required',
+  USED_REFRESH_TOKEN_OR_NOT_EXIST: 'Used refresh token or not exist',
+
   REGISTER_SUCCESS: 'Register successfully, please check your email to verify your account',
-  LOGIN_SUCCESS: 'Login successfully'
+  LOGIN_SUCCESS: 'Login successfully',
+  LOGOUT_SUCCESS: 'Logout successfully'
 }
