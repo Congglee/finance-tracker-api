@@ -1,7 +1,7 @@
 import prisma from '~/client'
 import { RegisterReqBody } from '~/types/auth.types'
 import { v4 as uuidv4 } from 'uuid'
-import { signToken } from '~/utils/jwt'
+import { signToken, verifyToken } from '~/utils/jwt'
 import { TokenType } from '~/constants/enums'
 import { UserVerifyStatus } from '@prisma/client'
 import { envConfig } from '~/config/environment'
@@ -10,12 +10,43 @@ import { AUTH_MESSAGES } from '~/constants/messages'
 import { sendVerifyRegisterEmail } from '~/providers/resend'
 
 class AuthService {
+  private signAccessToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+    return signToken({
+      payload: { user_id, token_type: TokenType.AccessToken, verify },
+      privateKey: envConfig.jwtSecretAccessToken,
+      options: { expiresIn: envConfig.accessTokenExpiresIn }
+    })
+  }
+
+  private signRefreshToken({ user_id, verify, exp }: { user_id: string; verify: UserVerifyStatus; exp?: number }) {
+    if (exp) {
+      return signToken({
+        payload: { user_id, token_type: TokenType.RefreshToken, verify, exp },
+        privateKey: envConfig.jwtSecretRefreshToken
+      })
+    }
+
+    return signToken({
+      payload: { user_id, token_type: TokenType.RefreshToken, verify },
+      privateKey: envConfig.jwtSecretRefreshToken,
+      options: { expiresIn: envConfig.refreshTokenExpiresIn }
+    })
+  }
+
   private signEmailVerifyToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
     return signToken({
       payload: { user_id, token_type: TokenType.EmailVerifyToken, verify },
       privateKey: envConfig.jwtSecretEmailVerifyToken,
       options: { expiresIn: envConfig.emailVerifyTokenExpiresIn }
     })
+  }
+
+  private signAccessAndRefreshToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+    return Promise.all([this.signAccessToken({ user_id, verify }), this.signRefreshToken({ user_id, verify })])
+  }
+
+  private decodeRefreshToken(refresh_token: string) {
+    return verifyToken({ token: refresh_token, secretOrPublicKey: envConfig.jwtSecretRefreshToken })
   }
 
   async checkEmailExist(email: string) {
@@ -43,6 +74,22 @@ class AuthService {
     await sendVerifyRegisterEmail(payload.email, email_verify_token)
 
     return { message: AUTH_MESSAGES.REGISTER_SUCCESS }
+  }
+
+  async login({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+    const [access_token, refresh_token] = await this.signAccessAndRefreshToken({ user_id, verify })
+    const { iat, exp } = await this.decodeRefreshToken(refresh_token)
+
+    await prisma.refreshToken.create({
+      data: {
+        userId: user_id,
+        token: refresh_token,
+        iat: new Date(iat * 1000),
+        exp: new Date(exp * 1000)
+      }
+    })
+
+    return { access_token, refresh_token }
   }
 }
 
