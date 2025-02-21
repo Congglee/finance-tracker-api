@@ -35,5 +35,10 @@ export const envConfig = {
   jwtSecretEmailVerifyToken: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string,
   emailVerifyTokenExpiresIn: process.env.EMAIL_VERIFY_TOKEN_EXPIRES_IN as string,
 
-  passwordSecret: process.env.PASSWORD_SECRET as string
+  passwordSecret: process.env.PASSWORD_SECRET as string,
+
+  clientUrl: process.env.CLIENT_URL as string,
+
+  resendApiKey: process.env.RESEND_API_KEY as string,
+  resendEmailFromAddress: process.env.RESEND_EMAIL_FROM_ADDRESS as string
 }
