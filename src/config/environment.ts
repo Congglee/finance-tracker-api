@@ -30,5 +30,10 @@ export const isProduction = env === 'production'
 
 export const envConfig = {
   port: (process.env.PORT as string) || '8000',
-  host: (process.env.HOST as string) || 'http://localhost'
+  host: (process.env.HOST as string) || 'http://localhost',
+
+  jwtSecretEmailVerifyToken: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string,
+  emailVerifyTokenExpiresIn: process.env.EMAIL_VERIFY_TOKEN_EXPIRES_IN as string,
+
+  passwordSecret: process.env.PASSWORD_SECRET as string
 }
