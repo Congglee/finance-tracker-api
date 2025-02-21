@@ -7,6 +7,7 @@ import { UserVerifyStatus } from '@prisma/client'
 import { envConfig } from '~/config/environment'
 import { hashPassword } from '~/utils/crypto'
 import { AUTH_MESSAGES } from '~/constants/messages'
+import { sendVerifyRegisterEmail } from '~/providers/resend'
 
 class AuthService {
   private signEmailVerifyToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
@@ -39,7 +40,7 @@ class AuthService {
       }
     })
 
-    // Integrate with email service to send email verification
+    await sendVerifyRegisterEmail(payload.email, email_verify_token)
 
     return { message: AUTH_MESSAGES.REGISTER_SUCCESS }
   }
