@@ -91,6 +91,11 @@ class AuthService {
 
     return { access_token, refresh_token }
   }
+
+  async logout(refresh_token: string) {
+    await prisma.refreshToken.deleteMany({ where: { token: refresh_token } })
+    return { message: AUTH_MESSAGES.LOGOUT_SUCCESS }
+  }
 }
 
 const authService = new AuthService()
