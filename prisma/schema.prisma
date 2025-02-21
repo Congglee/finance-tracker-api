@@ -14,28 +14,137 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String   @db.VarChar(255)
-  content   String?
-  published Boolean  @default(false)
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
-}
-
-model Profile {
-  id     Int     @id @default(autoincrement())
-  bio    String?
-  user   User    @relation(fields: [userId], references: [id])
-  userId Int     @unique
-}
-
 model User {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  name    String?
-  posts   Post[]
-  profile Profile?
+  id                  String            @id @default(uuid())
+  name                String
+  email               String            @unique
+  password            String
+  emailVerifyToken    String?           @map("email_verify_token")
+  forgotPasswordToken String?           @map("forgot_password_token")
+  verify              UserVerifyStatus? @default(Unverified)
+  avatar              String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  refreshToken RefreshToken[]
+  userSetting  UserSetting?
+  account      Account[]
+  category     Category[]
+  budget       Budget[]
+
+  @@index([email, password], name: "email_password_idx")
+  @@map("users")
+}
+
+model RefreshToken {
+  id    String   @id @default(uuid())
+  token String
+  iat   DateTime // Need to convert Epoch time to Date
+  exp   DateTime // Need to convert Epoch time to Date
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token], name: "refresh_token_idx")
+  @@map("refresh_tokens")
+}
+
+model UserSetting {
+  userId   String @id @unique @map("user_id")
+  currency String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_settings")
+}
+
+model Account {
+  id   String @id @default(uuid())
+  name String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  transaction Transaction[]
+
+  @@map("accounts")
+}
+
+model Category {
+  id   String  @id @default(uuid())
+  name String
+  icon String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  transaction Transaction[]
+  budget      Budget[]
+
+  @@map("categories")
+}
+
+model Transaction {
+  id     String   @id @default(uuid())
+  name   String?
+  amount Int
+  payee  String
+  notes  String?
+  date   DateTime
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  accountId String  @map("account_id")
+  account   Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  categoryId String   @map("category_id")
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  @@map("transactions")
+}
+
+model Budget {
+  id        String    @id @default(uuid())
+  name      String
+  amount    Int
+  spent     Int
+  startDate DateTime? @map("start_date")
+  endDate   DateTime? @map("end_date")
+
+  // TODO: Feature to be implemented in the future
+  // periodType            BudgetPeriodType @default(Daily) @map("period_type")
+  // recurring             Boolean          @default(false)
+  // notificationThreshold Int?             @map("notification_threshold")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  categoryId String?   @map("category_id")
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("budgets")
+}
+
+enum UserVerifyStatus {
+  Unverified
+  Verified
+}
+
+enum BudgetPeriodType {
+  Daily
+  Weekly
+  Monthly
+  Yearly
 }
