@@ -1,9 +1,18 @@
 import { ParamsDictionary } from 'express-serve-static-core'
 import { NextFunction, Request, Response } from 'express'
 import authService from '~/services/auth.services'
-import { LoginReqBody, LogoutReqBody, RefreshTokenReqBody, RegisterReqBody, TokenPayload } from '~/types/auth.types'
+import {
+  LoginReqBody,
+  LogoutReqBody,
+  RefreshTokenReqBody,
+  RegisterReqBody,
+  TokenPayload,
+  VerifyEmailReqBody
+} from '~/types/auth.types'
 import { User, UserVerifyStatus } from '@prisma/client'
 import { AUTH_MESSAGES } from '~/constants/messages'
+import prisma from '~/client'
+import HTTP_STATUS from '~/constants/httpStatus'
 
 export const registerController = async (
   req: Request<ParamsDictionary, any, RegisterReqBody>,
@@ -38,4 +47,27 @@ export const refreshTokenController = async (
   const result = await authService.refreshToken({ user_id, verify, refresh_token, exp })
 
   return res.json({ message: AUTH_MESSAGES.REFRESH_TOKEN_SUCCESS, result })
+}
+
+export const verifyEmailController = async (
+  req: Request<ParamsDictionary, any, VerifyEmailReqBody>,
+  res: Response,
+  next: NextFunction
+) => {
+  const { user_id } = req.decoded_email_verify_token as TokenPayload
+  const user = await prisma.user.findUnique({ where: { id: user_id } })
+
+  if (!user) {
+    return res.status(HTTP_STATUS.NOT_FOUND).json({
+      message: AUTH_MESSAGES.USER_NOT_FOUND
+    })
+  }
+
+  if (user.emailVerifyToken === '') {
+    return res.json({ message: AUTH_MESSAGES.EMAIL_ALREADY_VERIFIED_BEFORE })
+  }
+
+  const result = await authService.verifyEmail(user_id)
+
+  return res.json({ message: AUTH_MESSAGES.EMAIL_VERIFY_SUCCESS, result })
 }
