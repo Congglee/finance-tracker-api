@@ -1,7 +1,7 @@
 import { ParamsDictionary } from 'express-serve-static-core'
 import { NextFunction, Request, Response } from 'express'
 import authService from '~/services/auth.services'
-import { LoginReqBody, LogoutReqBody, RegisterReqBody } from '~/types/auth.types'
+import { LoginReqBody, LogoutReqBody, RefreshTokenReqBody, RegisterReqBody, TokenPayload } from '~/types/auth.types'
 import { User, UserVerifyStatus } from '@prisma/client'
 import { AUTH_MESSAGES } from '~/constants/messages'
 
@@ -27,4 +27,15 @@ export const logoutController = async (req: Request<ParamsDictionary, any, Logou
   const result = await authService.logout(refresh_token)
 
   return res.json(result)
+}
+
+export const refreshTokenController = async (
+  req: Request<ParamsDictionary, any, RefreshTokenReqBody>,
+  res: Response
+) => {
+  const { refresh_token } = req.body
+  const { user_id, verify, exp } = req.decoded_refresh_token as TokenPayload
+  const result = await authService.refreshToken({ user_id, verify, refresh_token, exp })
+
+  return res.json({ message: AUTH_MESSAGES.REFRESH_TOKEN_SUCCESS, result })
 }

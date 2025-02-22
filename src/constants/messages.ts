@@ -29,5 +29,6 @@ export const AUTH_MESSAGES = {
 
   REGISTER_SUCCESS: 'Register successfully, please check your email to verify your account',
   LOGIN_SUCCESS: 'Login successfully',
-  LOGOUT_SUCCESS: 'Logout successfully'
+  LOGOUT_SUCCESS: 'Logout successfully',
+  REFRESH_TOKEN_SUCCESS: 'Refresh token successfully'
 }
