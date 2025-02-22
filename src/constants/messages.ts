@@ -41,5 +41,6 @@ export const AUTH_MESSAGES = {
   EMAIL_VERIFY_SUCCESS: 'Email verify successfully',
   RESEND_EMAIL_VERIFY_SUCCESS: 'Resend email verify successfully',
   CHECK_EMAIL_TO_RESET_PASSWORD: 'Check your email to reset your password',
-  VERIFY_FORGOT_PASSWORD_SUCCESS: 'Verify forgot password successfully'
+  VERIFY_FORGOT_PASSWORD_SUCCESS: 'Verify forgot password successfully',
+  RESET_PASSWORD_SUCCESS: 'Reset password successfully'
 }
