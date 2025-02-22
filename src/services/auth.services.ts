@@ -7,7 +7,7 @@ import { UserVerifyStatus } from '@prisma/client'
 import { envConfig } from '~/config/environment'
 import { hashPassword } from '~/utils/crypto'
 import { AUTH_MESSAGES } from '~/constants/messages'
-import { sendVerifyRegisterEmail } from '~/providers/resend'
+import { sendForgotPasswordEmail, sendVerifyRegisterEmail } from '~/providers/resend'
 
 class AuthService {
   private signAccessToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
@@ -47,6 +47,14 @@ class AuthService {
 
   private decodeRefreshToken(refresh_token: string) {
     return verifyToken({ token: refresh_token, secretOrPublicKey: envConfig.jwtSecretRefreshToken })
+  }
+
+  private signForgotPasswordToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+    return signToken({
+      payload: { user_id, token_type: TokenType.ForgotPasswordToken, verify },
+      privateKey: envConfig.jwtSecretForgotPasswordToken,
+      options: { expiresIn: envConfig.forgotPasswordTokenExpiresIn }
+    })
   }
 
   async checkEmailExist(email: string) {
@@ -163,6 +171,18 @@ class AuthService {
     })
 
     return { message: AUTH_MESSAGES.RESEND_EMAIL_VERIFY_SUCCESS }
+  }
+
+  async forgotPassword({ user_id, email, verify }: { user_id: string; email: string; verify: UserVerifyStatus }) {
+    const forgot_password_token = await this.signForgotPasswordToken({ user_id, verify })
+
+    await prisma.user.update({
+      where: { id: user_id },
+      data: { forgotPasswordToken: forgot_password_token }
+    })
+    await sendForgotPasswordEmail(email, forgot_password_token)
+
+    return { message: AUTH_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD }
   }
 }
 

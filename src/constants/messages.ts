@@ -36,5 +36,6 @@ export const AUTH_MESSAGES = {
   LOGOUT_SUCCESS: 'Logout successfully',
   REFRESH_TOKEN_SUCCESS: 'Refresh token successfully',
   EMAIL_VERIFY_SUCCESS: 'Email verify successfully',
-  RESEND_EMAIL_VERIFY_SUCCESS: 'Resend email verify successfully'
+  RESEND_EMAIL_VERIFY_SUCCESS: 'Resend email verify successfully',
+  CHECK_EMAIL_TO_RESET_PASSWORD: 'Check your email to reset your password'
 }
