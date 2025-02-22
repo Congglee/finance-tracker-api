@@ -96,6 +96,36 @@ class AuthService {
     await prisma.refreshToken.deleteMany({ where: { token: refresh_token } })
     return { message: AUTH_MESSAGES.LOGOUT_SUCCESS }
   }
+
+  async refreshToken({
+    user_id,
+    verify,
+    refresh_token,
+    exp
+  }: {
+    user_id: string
+    verify: UserVerifyStatus
+    refresh_token: string
+    exp: number
+  }) {
+    const [new_access_token, new_refresh_token] = await Promise.all([
+      this.signAccessToken({ user_id, verify }),
+      this.signRefreshToken({ user_id, verify }),
+      prisma.refreshToken.deleteMany({ where: { token: refresh_token } })
+    ])
+    const decoded_refresh_token = await this.decodeRefreshToken(new_refresh_token)
+
+    await prisma.refreshToken.create({
+      data: {
+        userId: user_id,
+        token: new_refresh_token,
+        iat: new Date(decoded_refresh_token.iat * 1000),
+        exp: new Date(decoded_refresh_token.exp * 1000)
+      }
+    })
+
+    return { access_token: new_access_token, refresh_token: new_refresh_token }
+  }
 }
 
 const authService = new AuthService()
