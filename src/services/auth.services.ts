@@ -184,6 +184,14 @@ class AuthService {
 
     return { message: AUTH_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD }
   }
+
+  async resetPassword(user_id: string, password: string) {
+    await prisma.user.update({
+      where: { id: user_id },
+      data: { forgotPasswordToken: '', password: hashPassword(password) }
+    })
+    return { message: AUTH_MESSAGES.RESET_PASSWORD_SUCCESS }
+  }
 }
 
 const authService = new AuthService()
