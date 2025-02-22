@@ -31,11 +31,15 @@ export const AUTH_MESSAGES = {
   USER_NOT_FOUND: 'User not found',
   EMAIL_ALREADY_VERIFIED_BEFORE: 'Email already verified before',
 
+  FORGOT_PASSWORD_TOKEN_IS_REQUIRED: 'Forgot password token is required',
+  INVALID_FORGOT_PASSWORD_TOKEN: 'Invalid forgot password token',
+
   REGISTER_SUCCESS: 'Register successfully, please check your email to verify your account',
   LOGIN_SUCCESS: 'Login successfully',
   LOGOUT_SUCCESS: 'Logout successfully',
   REFRESH_TOKEN_SUCCESS: 'Refresh token successfully',
   EMAIL_VERIFY_SUCCESS: 'Email verify successfully',
   RESEND_EMAIL_VERIFY_SUCCESS: 'Resend email verify successfully',
-  CHECK_EMAIL_TO_RESET_PASSWORD: 'Check your email to reset your password'
+  CHECK_EMAIL_TO_RESET_PASSWORD: 'Check your email to reset your password',
+  VERIFY_FORGOT_PASSWORD_SUCCESS: 'Verify forgot password successfully'
 }

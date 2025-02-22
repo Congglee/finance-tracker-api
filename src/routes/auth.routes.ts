@@ -6,7 +6,8 @@ import {
   refreshTokenController,
   registerController,
   resendVerifyEmailController,
-  verifyEmailController
+  verifyEmailController,
+  verifyForgotPasswordController
 } from '~/controllers/auth.controllers'
 import {
   accessTokenValidator,
@@ -14,7 +15,8 @@ import {
   forgotPasswordValidator,
   loginValidator,
   refreshTokenValidator,
-  registerValidator
+  registerValidator,
+  verifyForgotPasswordTokenValidator
 } from '~/middlewares/auth.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
 
@@ -33,5 +35,11 @@ authRouter.post('/verify-email', emailVerifyTokenValidator, wrapRequestHandler(v
 authRouter.post('/resend-verify-email', accessTokenValidator, wrapRequestHandler(resendVerifyEmailController))
 
 authRouter.post('/forgot-password', forgotPasswordValidator, wrapRequestHandler(forgotPasswordController))
+
+authRouter.post(
+  '/verify-forgot-password',
+  verifyForgotPasswordTokenValidator,
+  wrapRequestHandler(verifyForgotPasswordController)
+)
 
 export default authRouter

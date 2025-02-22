@@ -8,7 +8,8 @@ import {
   RefreshTokenReqBody,
   RegisterReqBody,
   TokenPayload,
-  VerifyEmailReqBody
+  VerifyEmailReqBody,
+  VerifyForgotPasswordReqBody
 } from '~/types/auth.types'
 import { User, UserVerifyStatus } from '@prisma/client'
 import { AUTH_MESSAGES } from '~/constants/messages'
@@ -107,4 +108,12 @@ export const forgotPasswordController = async (
   })
 
   return res.json(result)
+}
+
+export const verifyForgotPasswordController = async (
+  req: Request<ParamsDictionary, any, VerifyForgotPasswordReqBody>,
+  res: Response,
+  next: NextFunction
+) => {
+  return res.json({ message: AUTH_MESSAGES.VERIFY_FORGOT_PASSWORD_SUCCESS })
 }
