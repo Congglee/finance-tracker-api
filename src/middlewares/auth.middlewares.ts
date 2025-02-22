@@ -62,6 +62,56 @@ export const confirmPasswordSchema: ParamSchema = {
   }
 }
 
+const forgotPasswordTokenSchema: ParamSchema = {
+  trim: true,
+  custom: {
+    options: async (value: string, { req }) => {
+      if (!value) {
+        throw new ErrorWithStatus({
+          message: AUTH_MESSAGES.FORGOT_PASSWORD_TOKEN_IS_REQUIRED,
+          status: HTTP_STATUS.UNAUTHORIZED
+        })
+      }
+
+      try {
+        const decoded_forgot_password_token = await verifyToken({
+          token: value,
+          secretOrPublicKey: envConfig.jwtSecretForgotPasswordToken
+        })
+        const { user_id } = decoded_forgot_password_token
+
+        const user = await prisma.user.findUnique({ where: { id: user_id } })
+
+        if (user === null) {
+          throw new ErrorWithStatus({
+            message: AUTH_MESSAGES.USER_NOT_FOUND,
+            status: HTTP_STATUS.UNAUTHORIZED
+          })
+        }
+
+        if (user.forgotPasswordToken !== value) {
+          throw new ErrorWithStatus({
+            message: AUTH_MESSAGES.INVALID_FORGOT_PASSWORD_TOKEN,
+            status: HTTP_STATUS.UNAUTHORIZED
+          })
+        }
+
+        req.decoded_forgot_password_token = decoded_forgot_password_token
+      } catch (error) {
+        if (error instanceof JsonWebTokenError) {
+          throw new ErrorWithStatus({
+            message: capitalize(error.message),
+            status: HTTP_STATUS.UNAUTHORIZED
+          })
+        }
+        throw error
+      }
+
+      return true
+    }
+  }
+}
+
 export const registerValidator = validate(
   checkSchema(
     {
@@ -260,4 +310,8 @@ export const forgotPasswordValidator = validate(
     },
     ['body']
   )
+)
+
+export const verifyForgotPasswordTokenValidator = validate(
+  checkSchema({ forgot_password_token: forgotPasswordTokenSchema }, ['body'])
 )
