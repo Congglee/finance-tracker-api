@@ -237,3 +237,27 @@ export const emailVerifyTokenValidator = validate(
     ['body']
   )
 )
+
+export const forgotPasswordValidator = validate(
+  checkSchema(
+    {
+      email: {
+        isEmail: { errorMessage: AUTH_MESSAGES.EMAIL_IS_INVALID },
+        trim: true,
+        custom: {
+          options: async (value, { req }) => {
+            const user = await prisma.user.findUnique({ where: { email: value } })
+
+            if (user === null) {
+              throw new Error(AUTH_MESSAGES.USER_NOT_FOUND)
+            }
+
+            req.user = user
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+)
