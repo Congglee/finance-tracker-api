@@ -126,6 +126,29 @@ class AuthService {
 
     return { access_token: new_access_token, refresh_token: new_refresh_token }
   }
+
+  async verifyEmail(user_id: string) {
+    const [token] = await Promise.all([
+      this.signAccessAndRefreshToken({ user_id, verify: UserVerifyStatus.Verified }),
+      await prisma.user.update({
+        where: { id: user_id },
+        data: { emailVerifyToken: '', verify: UserVerifyStatus.Verified }
+      })
+    ])
+    const [access_token, refresh_token] = token
+    const { iat, exp } = await this.decodeRefreshToken(refresh_token)
+
+    await prisma.refreshToken.create({
+      data: {
+        userId: user_id,
+        token: refresh_token,
+        iat: new Date(iat * 1000),
+        exp: new Date(exp * 1000)
+      }
+    })
+
+    return { access_token, refresh_token }
+  }
 }
 
 const authService = new AuthService()
