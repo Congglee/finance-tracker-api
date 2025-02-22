@@ -4,6 +4,7 @@ import {
   logoutController,
   refreshTokenController,
   registerController,
+  resendVerifyEmailController,
   verifyEmailController
 } from '~/controllers/auth.controllers'
 import {
@@ -26,5 +27,7 @@ authRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapRequ
 authRouter.post('/refresh-token', refreshTokenValidator, wrapRequestHandler(refreshTokenController))
 
 authRouter.post('/verify-email', emailVerifyTokenValidator, wrapRequestHandler(verifyEmailController))
+
+authRouter.post('/resend-verify-email', accessTokenValidator, wrapRequestHandler(resendVerifyEmailController))
 
 export default authRouter

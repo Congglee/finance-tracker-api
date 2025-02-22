@@ -149,6 +149,21 @@ class AuthService {
 
     return { access_token, refresh_token }
   }
+
+  async resendVerifyEmail(user_id: string, email: string) {
+    const email_verify_token = await this.signEmailVerifyToken({
+      user_id,
+      verify: UserVerifyStatus.Unverified
+    })
+    await sendVerifyRegisterEmail(email, email_verify_token)
+
+    await prisma.user.update({
+      where: { id: user_id },
+      data: { emailVerifyToken: email_verify_token }
+    })
+
+    return { message: AUTH_MESSAGES.RESEND_EMAIL_VERIFY_SUCCESS }
+  }
 }
 
 const authService = new AuthService()
