@@ -90,6 +90,7 @@ export const resendVerifyEmailController = async (req: Request, res: Response, n
       message: AUTH_MESSAGES.EMAIL_ALREADY_VERIFIED_BEFORE
     })
   }
+
   const result = await authService.resendVerifyEmail(user_id, user.email)
 
   return res.json(result)
