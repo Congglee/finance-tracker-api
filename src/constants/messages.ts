@@ -44,3 +44,18 @@ export const AUTH_MESSAGES = {
   VERIFY_FORGOT_PASSWORD_SUCCESS: 'Verify forgot password successfully',
   RESET_PASSWORD_SUCCESS: 'Reset password successfully'
 }
+
+export const USERS_MESSAGES = {
+  GET_ME_SUCCESS: 'Get my profile successfully',
+
+  USER_NOT_VERIFIED: 'User not verified',
+
+  IMAGE_URL_MUST_BE_STRING: 'Image URL must be a string',
+  IMAGE_URL_LENGTH: 'Image URL length must be between 1 and 400 characters',
+
+  UPDATE_ME_SUCCESS: 'Update my profile successfully',
+
+  OLD_PASSWORD_NOT_MATCH: 'Old password not match',
+
+  CHANGE_PASSWORD_SUCCESS: 'Change password successfully'
+}
