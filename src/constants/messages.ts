@@ -59,3 +59,28 @@ export const USERS_MESSAGES = {
 
   CHANGE_PASSWORD_SUCCESS: 'Change password successfully'
 }
+
+export const CATEGORIES_MESSAGES = {
+  CREATE_CATEGORY_SUCCESS: 'Create category successfully',
+
+  CATEGORY_NAME_IS_REQUIRED: 'Category name is required',
+  CATEGORY_NAME_MUST_BE_STRING: 'Category name must be a string',
+  CATEGORY_NAME_MUST_BE_BETWEEN_1_AND_256: 'Category name must be between 1 and 256 characters',
+  CATEGORY_ICON_MUST_BE_STRING: 'Category icon must be a string',
+
+  GET_CATEGORIES_SUCCESS: 'Get categories successfully',
+
+  INVALID_CATEGORY_ID: 'Invalid category id',
+  CATEGORY_NOT_FOUND: 'Category not found',
+
+  GET_CATEGORY_SUCCESS: 'Get category successfully',
+
+  UPDATE_CATEGORY_SUCCESS: 'Update category successfully',
+
+  DELETE_CATEGORY_SUCCESS: 'Delete category successfully',
+
+  CATEGORY_IDS_MUST_BE_ARRAY: 'Category ids must be an array of strings',
+  CATEGORY_IDS_CANNOT_BE_EMPTY: 'Category ids cannot be empty',
+
+  BULK_DELETE_CATEGORY_SUCCESS: 'Bulk delete categories successfully'
+}

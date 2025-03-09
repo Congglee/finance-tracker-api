@@ -7,9 +7,9 @@ import { ChangePasswordReqBody, UpdateMeReqBody } from '~/types/users.types'
 
 export const getMeController = async (req: Request, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
-  const user = await usersService.getMe(user_id)
+  const result = await usersService.getMe(user_id)
 
-  return res.json({ message: USERS_MESSAGES.GET_ME_SUCCESS, result: user })
+  return res.json({ message: USERS_MESSAGES.GET_ME_SUCCESS, result })
 }
 
 export const updateMeController = async (
@@ -18,11 +18,9 @@ export const updateMeController = async (
   next: NextFunction
 ) => {
   const { user_id } = req.decoded_authorization as TokenPayload
-  const { body } = req
+  const result = await usersService.updateMe(user_id, req.body)
 
-  const user = await usersService.updateMe(user_id, body)
-
-  return res.json({ message: USERS_MESSAGES.UPDATE_ME_SUCCESS, result: user })
+  return res.json({ message: USERS_MESSAGES.UPDATE_ME_SUCCESS, result })
 }
 
 export const changePasswordController = async (

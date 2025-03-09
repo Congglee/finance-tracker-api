@@ -8,8 +8,9 @@ import { excludeFromObject } from '~/utils/helpers'
 class UsersService {
   async getMe(user_id: string) {
     const user = (await prisma.user.findUnique({ where: { id: user_id } })) as User
+    const result = excludeFromObject(user, ['password', 'emailVerifyToken', 'forgotPasswordToken'])
 
-    return excludeFromObject(user, ['password', 'emailVerifyToken', 'forgotPasswordToken'])
+    return result
   }
 
   async updateMe(user_id: string, payload: UpdateMeReqBody) {
@@ -17,8 +18,9 @@ class UsersService {
       where: { id: user_id },
       data: { ...payload }
     })
+    const result = excludeFromObject(user, ['password', 'emailVerifyToken', 'forgotPasswordToken'])
 
-    return excludeFromObject(user, ['password', 'emailVerifyToken', 'forgotPasswordToken'])
+    return result
   }
 
   async changePassword(user_id: string, new_password: string) {
